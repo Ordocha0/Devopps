@@ -1,0 +1,172 @@
+# ===========================
+# Namespace
+# ===========================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: issue-app-backend
+
+---
+# ===========================
+# External Secret (Vault → K8s)
+# ===========================
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: issue-app-backend-db-secrets
+  namespace: issue-app-backend
+spec:
+  refreshInterval: 1m
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: issue-app-backend-db-secrets
+    creationPolicy: Owner
+  dataFrom:
+    - extract:
+        key: Services/issue-app-backend/prod
+
+---
+# ===========================
+# ConfigMap (Non-Sensitive)
+# ===========================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: issue-app-backend-config
+  namespace: issue-app-backend
+data:
+  PORT: "3003"
+  POSTGRES_HOST: "issue-app-backend-postgres-service"
+  POSTGRES_PORT: "5432"
+  NODE_ENV: "production"
+
+---
+# ===========================
+# Persistent Volume Claim
+# ===========================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: issue-app-backend
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+# ===========================
+# Postgres Deployment
+# ===========================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: issue-app-backend-postgres
+  namespace: issue-app-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: issue-app-backend-postgres
+  template:
+    metadata:
+      labels:
+        app: issue-app-backend-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: issue-app-backend-db-secrets
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+
+---
+# ===========================
+# Postgres Service
+# ===========================
+apiVersion: v1
+kind: Service
+metadata:
+  name: issue-app-backend-postgres-service
+  namespace: issue-app-backend
+spec:
+  selector:
+    app: issue-app-backend-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP
+
+---
+# ===========================
+# issue-app-backend App Deployment
+# ===========================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: issue-app-backend-app
+  namespace: issue-app-backend
+  labels:
+    smart-restart.io/enabled: "true"         # Tells the engine to look at this app
+  annotations:
+    smart-restart.io/max-retries: "3"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: issue-app-backend
+  template:
+    metadata:
+      labels:
+        app: issue-app-backend
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: issue-app-backend
+          image: ghcr.io/tapandgo/issue-app-backend:d9622f73cd59d4059393849f891012583a98a242
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3003
+          envFrom:
+            - configMapRef:
+                name: issue-app-backend-config
+            - secretRef:
+                name: issue-app-backend-db-secrets
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3003
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+---
+# ===========================
+# issue-app-backend App Service
+# ===========================
+apiVersion: v1
+kind: Service
+metadata:
+  name: issue-app-backend-service
+  namespace: issue-app-backend
+spec:
+  selector:
+    app: issue-app-backend
+  type: NodePort
+  ports:
+    - port: 3003
+      targetPort: 3003
+      nodePort: 30003

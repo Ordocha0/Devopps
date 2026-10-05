@@ -18,7 +18,7 @@ metadata:
 data:
   PORT: "80"
   NODE_ENV: "production"
-  VITE_BASE_URL: "https://issues-backend.ordochao.dev"
+  VITE_BASE_URL: "http://167.86.93.210:30033"
 
 ---
 # ===========================

@@ -10,7 +10,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.middlewares: kube-system-global-ratelimit@kubernetescrd
 spec:
   rules:
-    - host: issues-backend.ordochao
+    - host: issues-backend.ordochao.dev
       http:
         paths:
           - path: /
@@ -22,5 +22,5 @@ spec:
                   number: 3003
   tls:
     - hosts:
-        - issues-backend.ordochao
+        - issues-backend.ordochao.dev
       secretName: issue-app-backend-tls

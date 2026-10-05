@@ -137,7 +137,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: issue-app-backend
-          image: ghcr.io/ordocha0/issue-tracking-backend:latest
+          image: ghcr.io/ordocha0/issue-tracking-backend:42f5ee8243855b0f5de8a6101a48a31f3aef31b1
           imagePullPolicy: Always
           ports:
             - containerPort: 3003

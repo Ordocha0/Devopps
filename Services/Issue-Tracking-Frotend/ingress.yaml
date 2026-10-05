@@ -10,7 +10,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.middlewares: kube-system-global-ratelimit@kubernetescrd
 spec:
   rules:
-    - host: looomlights.com
+    - host: issues-frontend.ordochao.dev
       http:
         paths:
           - path: /
@@ -22,5 +22,5 @@ spec:
                   number: 80 
   tls:
     - hosts:
-        - looomlights.com
+        - issues-frontend.ordochao.dev
       secretName: issue-app-frotend-tls

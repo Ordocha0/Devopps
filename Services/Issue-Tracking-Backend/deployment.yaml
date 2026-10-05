@@ -137,7 +137,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: issue-app-backend
-          image: ghcr.io/tapandgo/issue-app-backend:d9622f73cd59d4059393849f891012583a98a242
+          image: ghcr.io/ordochao/issue-app-backend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3003

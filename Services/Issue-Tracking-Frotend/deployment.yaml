@@ -47,7 +47,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: issue-app-frotend
-          image: ghcr.io/ordocha0/issue-tracking-frontend:031fd7bc17ce5d04b51d35ca1e51b072a48bc2cf
+          image: ghcr.io/ordocha0/issue-tracking-frontend:3caafd97c47cee147667b2eaefe5e97725e49f9c
           imagePullPolicy: Always
           ports:
             - containerPort: 80

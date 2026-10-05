@@ -8,24 +8,33 @@ metadata:
 
 ---
 # ===========================
-# External Secret (Vault → K8s)
+# Secret (Hardcoded - replaces Vault ExternalSecret)
 # ===========================
-apiVersion: external-secrets.io/v1beta1
-kind: ExternalSecret
+apiVersion: v1
+kind: Secret
 metadata:
   name: issue-app-backend-db-secrets
   namespace: issue-app-backend
-spec:
-  refreshInterval: 1m
-  secretStoreRef:
-    name: vault-backend
-    kind: ClusterSecretStore
-  target:
-    name: issue-app-backend-db-secrets
-    creationPolicy: Owner
-  dataFrom:
-    - extract:
-        key: Services/issue-app-backend/prod
+type: Opaque
+stringData:
+  # App / DB connection
+  DB_USER: "postgres"
+  DB_HOST: "issue-app-backend-postgres-service"
+  DB_NAME: "ticketing"
+  DB_PASSWORD: "Pr!nce9312lee"
+  DB_PORT: "5432"
+
+  # Migrations (node-pg-migrate / psql)
+  PGHOST: "issue-app-backend-postgres-service"
+  PGUSER: "postgres"
+  PGPASSWORD: "Pr!nce9312lee"
+  PGDATABASE: "ticketing"
+  PGPORT: "5432"
+
+  # Postgres container bootstrap
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "Pr!nce9312lee"
+  POSTGRES_DB: "ticketing"
 
 ---
 # ===========================
@@ -41,6 +50,7 @@ data:
   POSTGRES_HOST: "issue-app-backend-postgres-service"
   POSTGRES_PORT: "5432"
   NODE_ENV: "production"
+  BASE_URL: "http://localhost:3003"
 
 ---
 # ===========================
@@ -120,7 +130,7 @@ metadata:
   name: issue-app-backend-app
   namespace: issue-app-backend
   labels:
-    smart-restart.io/enabled: "true"         # Tells the engine to look at this app
+    smart-restart.io/enabled: "true"
   annotations:
     smart-restart.io/max-retries: "3"
 spec:
@@ -169,4 +179,4 @@ spec:
   ports:
     - port: 3003
       targetPort: 3003
-      nodePort: 30003
+      nodePort: 30033

@@ -35,6 +35,7 @@ stringData:
   POSTGRES_USER: "postgres"
   POSTGRES_PASSWORD: "Pr!nce9312lee"
   POSTGRES_DB: "ticketing"
+  JWT_SECRET: "8e06b3f3500d332590ea656bba62e2617f126e36eaa82364"
 
 ---
 # ===========================

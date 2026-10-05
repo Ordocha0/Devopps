@@ -18,6 +18,7 @@ metadata:
 data:
   PORT: "80"
   NODE_ENV: "production"
+  VITE_BASE_URL: "https://issues-backend.ordochao.dev"
 
 ---
 # ===========================
@@ -29,7 +30,7 @@ metadata:
   name: issue-app-frotend-app
   namespace: issue-app-frotend
   labels:
-    smart-restart.io/enabled: "true"         # Tells the engine to look at this app
+    smart-restart.io/enabled: "true"
   annotations:
     smart-restart.io/max-retries: "3"
 spec:
@@ -43,25 +44,22 @@ spec:
         app: issue-app-frotend
     spec:
       imagePullSecrets:
-        - name: ghcr-secret   # <--- Added this
+        - name: ghcr-secret
       containers:
         - name: issue-app-frotend
           image: ghcr.io/ordocha0/issue-tracking-frontend:571a9c006c195912fa3a80ab7b22d4c7cc2392bc
           imagePullPolicy: Always
           ports:
             - containerPort: 80
-          # envFrom:
-          #   - configMapRef:
-          #       name: issue-app-frotend-config
-          # command: ["npm"]
-          # args: ["run", "dev", "--", "--host=0.0.0.0"]
-          # readinessProbe optional
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 80
-          #   initialDelaySeconds: 5
-          #   periodSeconds: 10
+          envFrom:
+            - configMapRef:
+                name: issue-app-frotend-config
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
 
 ---
 # ===========================

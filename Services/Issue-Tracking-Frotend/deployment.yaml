@@ -46,7 +46,7 @@ spec:
         - name: ghcr-secret   # <--- Added this
       containers:
         - name: issue-app-frotend
-          image: ghcr.io/tapandgo/website:746aba8876eeccf471e57c4162f79f14fe916c09
+          image: ghcr.io/ordocha0/issue-tracking-frontend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80

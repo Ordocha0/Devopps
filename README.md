@@ -1,8 +1,8 @@
-# CrayGroup DevOpps — Architecture Documentation
+# DevOpps — Architecture Documentation
 
 ## Overview
 
-This repository holds the complete Infrastructure-as-Code (IaC) and GitOps configuration for deploying CrayGroup's full-stack applications on Kubernetes. Deployments are declarative, versioned in Git, and reconciled into the cluster by Argo CD. Container images are built by GitHub Actions and published to GHCR.
+This repository holds the complete Infrastructure-as-Code (IaC) and GitOps configuration for deploying  full-stack applications on Kubernetes. Deployments are declarative, versioned in Git, and reconciled into the cluster by Argo CD. Container images are built by GitHub Actions and published to GHCR.
 
 **Note:** HashiCorp Vault has been removed from this architecture. Secret management now uses plain Kubernetes `Secret` objects (with a migration path to SealedSecrets recommended).
 
